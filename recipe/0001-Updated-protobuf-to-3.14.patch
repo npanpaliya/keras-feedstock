@@ -1,0 +1,89 @@
+From 7e0fa42ae09cd33a5883a03515f43f61679aa536 Mon Sep 17 00:00:00 2001
+From: Nishidha Panpaliya <npanpa23@in.ibm.com>
+Date: Wed, 18 Aug 2021 12:09:28 -0400
+Subject: [PATCH] Updated protobuf to 3.14
+
+---
+ WORKSPACE                  |  8 +++---
+ third_party/protobuf.patch | 50 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 55 insertions(+), 3 deletions(-)
+ create mode 100644 third_party/protobuf.patch
+
+diff --git a/WORKSPACE b/WORKSPACE
+index 2c03ebba..a32ff789 100644
+--- a/WORKSPACE
++++ b/WORKSPACE
+@@ -31,9 +31,11 @@ bind(
+ 
+ http_archive(
+     name = "com_google_protobuf",
+-    sha256 = "1fbf1c2962af287607232b2eddeaec9b4f4a7a6f5934e1a9276e9af76952f7e0",
+-    strip_prefix = "protobuf-3.9.2",
+-    urls = ["https://github.com/protocolbuffers/protobuf/archive/v3.9.2.tar.gz"],
++    sha256 = "d0f5f605d0d656007ce6c8b5a82df3037e1d8fe8b121ed42e536f569dec16113",
++    strip_prefix = "protobuf-3.14.0",
++    urls = ["https://github.com/protocolbuffers/protobuf/archive/v3.14.0.tar.gz"],
++    patches = ["//thirdparty:protobuf.patch"],
+ )
++
+ load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
+ protobuf_deps()
+diff --git a/third_party/protobuf.patch b/third_party/protobuf.patch
+new file mode 100644
+index 00000000..9b93d58a
+--- /dev/null
++++ b/third_party/protobuf.patch
+@@ -0,0 +1,50 @@
++From b4e0065741603ea8979539873438656f07d54fa3 Mon Sep 17 00:00:00 2001
++From: Jason Furmanek <furmanek@us.ibm.com>
++Date: Mon, 12 Jul 2021 11:09:55 -0500
++Subject: [PATCH] [PATCH] Update protobuf to 3.14
++
++---
++ BUILD | 6 ++++--
++ 1 file changed, 4 insertions(+), 2 deletions(-)
++
++diff --git a/BUILD b/BUILD
++index 112432160..4ba0da0ee 100644
++--- a/BUILD
+++++ b/BUILD
++@@ -50,7 +50,7 @@ GTEST_MAIN = select({
++ # ZLIB configuration
++ ################################################################################
++ 
++-ZLIB_DEPS = ["@zlib//:zlib"]
+++ZLIB_DEPS = ["@zlib"]
++ 
++ ################################################################################
++ # Protobuf Runtime Library
++@@ -199,6 +199,7 @@ cc_library(
++     copts = COPTS,
++     includes = ["src/"],
++     linkopts = LINK_OPTS,
+++    alwayslink = 1,
++     visibility = ["//visibility:public"],
++ )
++ 
++@@ -271,6 +272,7 @@ cc_library(
++     copts = COPTS,
++     includes = ["src/"],
++     linkopts = LINK_OPTS,
+++    alwayslink = 1,
++     visibility = ["//visibility:public"],
++     deps = [":protobuf_lite"] + PROTOBUF_DEPS,
++ )
++@@ -867,7 +869,7 @@ py_proto_library(
++     protoc = ":protoc",
++     py_libs = [
++         ":python_srcs",
++-        "@six//:six",
+++        "//external:six",
++     ],
++     srcs_version = "PY2AND3",
++     visibility = ["//visibility:public"],
++-- 
++2.23.0
++
+-- 
+2.23.0
+
